@@ -1,0 +1,47 @@
+#OBTENER COSAS (consultas)
+#1 mostrar el dni de los alumnos que suspendieron la 1ºev de dam
+SELECT distinct alumno
+FROM alumno_asignatura aa, asignatura a
+WHERE aa.nota_1Ev < 5 AND a.ciclo = "DAM";
+
+#2 nombre y apellido que han suspendido algo en 1ºev tmb el codigo de asignaturas suspensa y nota
+SELECT DISTINCT a.nombre, a.apellido, aa.asignatura, aa.nota_1Ev
+FROM alumno a, alumno_asignatura aa
+WHERE nota_1Ev < 5
+AND dni IN (
+    SELECT alumno
+    FROM alumno_asignatura
+    );
+
+#3 obten numero alumnos matriculados en cada aignatura de esmeralda, se obtendra codigo, numero alumnos
+select a.codigo, count(aa.alumno) as num_alumnos
+from asignatura a
+join alumno_asignatura aa on a.codigo = aa.asignatura
+join profesor p on a.profesor = p.dni
+where p.nombre = 'esmeralda' and p.apellido = 'sanz'
+group by a.codigo;
+
+#4 todos los datos de cada asig junto a nota media de esa asignatura en 1ev
+select asignatura.*, avg(alumno_asignatura.nota_1Ev) as nota_media_1Ev
+from asignatura
+inner join alumno_asignatura on asignatura.codigo = alumno_asignatura.asignatura
+group by asignatura.codigo;
+
+#5 Obtener datos de todos los jugadores menos los de los equipos uno, dos y tres.
+select j. *
+from equipos e, jugadores j
+where id_equipo > 3;
+
+#6 Obtener el número de ciudades en las que hay equipos.
+SELECT distinct count(ciudad)
+from equipos;
+
+#7 Listado de partidos ordenado por equipo local y fecha.
+SELECT *
+From partidos
+order by elocal, fecha asc;
+
+#10 mostrar los datos de los equipos que no hayan jugado ningún partido como visitante.
+SELECT DISTINCT e.*
+FROM equipos e, partidos p
+WHERE id_equipo NOT IN (SELECT evisitante FROM partidos);

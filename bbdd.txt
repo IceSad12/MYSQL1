@@ -1,0 +1,70 @@
+#PRACTICA COPIAS DE SEGURIDAD .sql .xml
+
+#4 aumentamos las horas del primer curso de DAM
+select * from (tabla);
+update (tabla)
+set horas = horas * 1.1
+where codigo IN ('DAM_AC', 'DAM_BBDD', 'DAM_FOL')
+AND curso = 1;
+
+#5 añade columna en la tabla profesor
+ALTER TABLE profesor
+ADD (nombre columna) int default 0
+
+#PRACTICA CREACION BBDD
+#creamos la base de datos taller
+#(revision (coche(subrayado 2 veces con - -) , fecha (con una linea),cambio...))
+#coche seleccionado y la matricula con una linea
+create database taller;
+use taller;
+create table taller.coche (
+matricula varchar(9) primary key not null,
+marca varchar (15),
+modelo varchar (15),
+mcolor varchar (15)
+);
+Create table taller.revision (
+coche varchar (9),
+fecha timestamp,
+cambio_aceite timestamp default null,
+cambio_filtro timestamp default null,
+cambio_freno timestamp default null,
+otros_cambios timestamp default null,
+ primary key (coche,fecha),
+ foreign key (coche)
+	references taller.coche (matricula)
+    on delete restrict on update cascade
+)
+
+
+
+#Crear un backup de la base de datos
+mysqldump -u root -p  --all-databases > "C:\hola.sql"
+
+#Crear un backup de la base de datos en xml
+mysqldump -u root -p --xml  centroestudios > C:/test.xml
+
+#Crear un backup de la tabla profesores de la base de datos centro estudios
+mysql -u root -p --xml -e "select * from centroestudios.profesores" > "C:\hola2.xml"
+
+#Restablecer el backup
+mysql -u root -p < "C:\hola.sql"
+
+#Establecer variables en caso de que se requiera
+SHOW variables LIKE 'local_infile';
+SET global local_infile=1;
+SET global local_infile=0;
+SET sql_safe_updates=1;
+
+#Cambiar el secure file priv en el my.ini
+secure-file-priv="C:\Program Files\MySQL\MySQL Server 8.0\bin"
+#Reiniciar el servicio mysql80
+
+#Acceder a restablecer el xml
+mysql --local-infile -u root -p centroestudios
+
+#Cargar el XML
+LOAD XML LOCAL INFILE 'C://Program Files//MySQL//MySQL Server 8.0//bin//hola2.xml'
+-> ignore
+-> into table centroestudios.profesor
+-> rows identified by '<row>';
